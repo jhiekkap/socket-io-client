@@ -3,20 +3,13 @@ import socketIOClient from "socket.io-client";
 const ENDPOINT = "http://127.0.0.1:4001";
 
 export default function ClientComponent() {
-    const [response, setResponse] = useState("");
-    const [message, setMessage] = useState('')
-    const [messages, setMessages] = useState([])
-
-    console.log('MESSAGES', messages)
+    const [response, setResponse] = useState("");  
 
     useEffect(() => {
         const socket = socketIOClient(ENDPOINT);
         socket.on("FromAPI", data => {
             setResponse(data);
-        });
-        socket.on("chat message", data => {
-            setMessages(messages.concat(data));
-        });
+        }); 
 
         // CLEAN UP THE EFFECT
         return () => socket.disconnect();
@@ -24,14 +17,7 @@ export default function ClientComponent() {
 
     }, []);
  
-
-    const handleSendMessage = (e) => {
-        e.preventDefault()
-        const socket = socketIOClient(ENDPOINT);
-        socket.emit('chat message', message)
-        setMessages(messages.concat(message))
-        setMessage('')
-    }
+ 
 
     return (
         <div>

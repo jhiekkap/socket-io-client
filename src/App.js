@@ -13,7 +13,7 @@ function App() {
         STOP CLIENT
       </button>
       {/* SOCKET IO CLIENT*/}
-      {loadClient ? <ClientComponent /> : null}
+     {/*  {loadClient ? <ClientComponent /> : null} */}
       {loadClient ? <Chat /> : null}
     </>
   );

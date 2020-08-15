@@ -7,13 +7,16 @@ export default function Chat() {
     const [messages, setMessages] = useState([])
 
 
-    console.log('MESSAGES', messages)
+    //console.log('MESSAGES', messages)
 
     useEffect(() => {
+
+        console.log('USE EFFECT')
         const socket = socketIOClient(ENDPOINT);
 
         socket.on("chat message", data => {
-            setMessages(messages.concat(data));
+            console.log('DATA, messages', data, messages)
+            setMessages(prevState => prevState.concat(data));
         });
 
         // CLEAN UP THE EFFECT
@@ -26,8 +29,7 @@ export default function Chat() {
     const handleSendMessage = (e) => {
         e.preventDefault()
         const socket = socketIOClient(ENDPOINT);
-        socket.emit('chat message', message)
-        setMessages(messages.concat(message))
+        socket.emit('chat message', message) 
         setMessage('')
     }
 
