@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import ClientComponent from "./ClientComponent";
+import Chat from './Chat'
 
 function App() {
   const [loadClient, setLoadClient] = useState(true);
+  
+
   return (
     <>
       {/* LOAD OR UNLOAD THE CLIENT */}
@@ -11,6 +14,7 @@ function App() {
       </button>
       {/* SOCKET IO CLIENT*/}
       {loadClient ? <ClientComponent /> : null}
+      {loadClient ? <Chat /> : null}
     </>
   );
 }

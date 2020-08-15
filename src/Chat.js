@@ -2,18 +2,16 @@ import React, { useEffect, useState } from "react";
 import socketIOClient from "socket.io-client";
 const ENDPOINT = "http://127.0.0.1:4001";
 
-export default function ClientComponent() {
-    const [response, setResponse] = useState("");
+export default function Chat() {
     const [message, setMessage] = useState('')
     const [messages, setMessages] = useState([])
+
 
     console.log('MESSAGES', messages)
 
     useEffect(() => {
         const socket = socketIOClient(ENDPOINT);
-        socket.on("FromAPI", data => {
-            setResponse(data);
-        });
+
         socket.on("chat message", data => {
             setMessages(messages.concat(data));
         });
@@ -23,7 +21,7 @@ export default function ClientComponent() {
         //
 
     }, []);
- 
+
 
     const handleSendMessage = (e) => {
         e.preventDefault()
@@ -35,10 +33,17 @@ export default function ClientComponent() {
 
     return (
         <div>
-            <p>
-                It's <time dateTime={response}>{response}</time>
-            </p>
-           
+            <form action="" onSubmit={handleSendMessage}>
+                <input
+                    type='text'
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                />
+                <button>PUSH ME</button>
+            </form>
+            <ul>
+                {messages.map((msg, i) => <li key={i}>{msg}</li>)}
+            </ul>
         </div>
 
     );
