@@ -1,14 +1,36 @@
 import React, { useEffect, useState } from "react";
 import socketIOClient from "socket.io-client";
+
 const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://young-dawn-64939.herokuapp.com/' : "http://127.0.0.1:4001";
+const emoijiStyles = {
+    cursor: 'pointer',
+    marginRight: '2%'
+}
+const EMOIJIS = {
+    heart: '❤️️',
+    happy: '😊',
+    sad: '☹️'
+}
+
+
 
 export default function Chat() {
-    const [message, setMessage] = useState('')
+    const [content, setContent] = useState('')
     const [messages, setMessages] = useState([])
     const [sender, setSender] = useState('')
     const [receiver, setReceiver] = useState('')
     const [recipients, setRecipients] = useState('')
+    const [file, setFile] = useState(null)
+    const [purity, setPurity] = useState(50)
+    const [overtones, setOvertones] = useState(50)
+    const [sendingEmoiji, setSendingEmoiji] = useState(false)
+    const [showEmoiji, setShowEmoiji] = useState('')
 
+    const emoijiStyles = {
+        cursor: 'pointer',
+        marginRight: '2%',
+        fontSize: sendingEmoiji && '20px'
+    }
 
 
     //console.log('MESSAGES', messages)
@@ -34,7 +56,16 @@ export default function Chat() {
 
         socket.on("receive_message", (data) => {
             console.log('NEW MESSAGE', data)
-            setMessages(prevState => prevState.concat(data.senderChatID + ': ' + data.content));
+            if (data.content) {
+                setMessages(prevState => prevState.concat(data.senderChatID + ': ' + data.content));
+            } else if (data.emoiji) {
+                setSendingEmoiji(true)
+                setShowEmoiji(data.emoiji)
+                setTimeout(() => {
+                    setSendingEmoiji(false)
+                    setShowEmoiji('')
+                }, 2000)
+            }
         });
 
         // CLEAN UP THE EFFECT
@@ -50,13 +81,23 @@ export default function Chat() {
         socket.emit('send_message', {
             receiverChatID: receiver,
             senderChatID: sender,
-            content: message,
+            content,
             recipients,
         })
         if (recipients !== 'ALL') {
-            setMessages(prevState => prevState.concat(sender + ': ' + message));
+            setMessages(prevState => prevState.concat(sender + ': ' + content));
         }
-        setMessage('')
+        setContent('')
+    }
+
+    const handleSendEmoiji = (emoiji) => {
+        const socket = socketIOClient(ENDPOINT);
+        socket.emit('send_message', {
+            receiverChatID: receiver,
+            senderChatID: sender,
+            recipients,
+            emoiji
+        })
     }
 
     return (
@@ -90,15 +131,15 @@ export default function Chat() {
                     </div>
                     <input
                         type='text'
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
                     />
                     <div>
                         <br />
                         <button type='submit' disabled={!sender}>PUSH ME</button>
                     </div>
                     <br />
-                    {message && <div>
+                    <div>
                         <input
                             type='checkbox'
                             checked={recipients !== 'ALL'}
@@ -113,14 +154,23 @@ export default function Chat() {
                             name='recipients'
                         />
                         <label>KAIKKI</label>
-                    </div>}
+                    </div>
                 </div>
-
             </form>
             <br />
-            <ul>
-                {messages.map((msg, i) => <li key={i}>{msg}</li>)}
-            </ul>
+            <div>
+                <span onClick={() => handleSendEmoiji('heart')} style={emoijiStyles}> ❤️️ </span>
+                <span onClick={() => handleSendEmoiji('happy')} style={emoijiStyles}> 😊 </span>
+                <span onClick={() => handleSendEmoiji('sad')} style={emoijiStyles}> ☹️ </span>
+            </div>
+            <div>
+                <ul>
+                    {messages.map((msg, i) => <li key={i}>{msg}</li>)}
+                </ul>
+            </div>
+            {showEmoiji && <div style={{ position: 'fixed', top: '50px', right: '50px', fontSize: '300px' }}>
+                {EMOIJIS[showEmoiji]}
+            </div>}
         </div>
 
     );
