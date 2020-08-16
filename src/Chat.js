@@ -95,7 +95,7 @@ export default function Chat() {
                     />
                     <div>
                         <br />
-                        <button type='submit'>PUSH ME</button>
+                        <button type='submit' disabled={!sender}>PUSH ME</button>
                     </div>
                     <br />
                     {message && <div>
