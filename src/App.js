@@ -10,7 +10,7 @@ function App() {
     <>
       {/* LOAD OR UNLOAD THE CLIENT */}
       <button onClick={() => setLoadClient(prevState => !prevState)}>
-        STOP CLIENT
+        STOPPA CLIENTEN
       </button>
       {/* SOCKET IO CLIENT*/}
      {/*  {loadClient ? <ClientComponent /> : null} */}
