@@ -8,6 +8,8 @@ export default function Chat() {
     const [sender, setSender] = useState('')
     const [receiver, setReceiver] = useState('')
 
+
+
     //console.log('MESSAGES', messages)
     //console.log('SENDER: ', sender)
     // console.log('RECEIVER: ', receiver)
@@ -17,15 +19,20 @@ export default function Chat() {
         console.log('USE EFFECT')
         const random = parseInt(Math.random() * 2)
         console.log('Random', random)
+        const chatID = random === 0 ? 'a' : 'b'
+        console.log('chatId', chatID)
         setReceiver(random === 1 ? 'a' : 'b')
-        setSender(random === 0 ? 'a' : 'b')
+        setSender(chatID)
+ 
         const socket = socketIOClient(ENDPOINT, {
-            query: random === 1 ? 'a' : 'b',
+            query: {
+                chatID
+            }
         });
 
-        socket.on("receive_message", data => {
+        socket.on("receive_message", (data) => {
             console.log('NEW MESSAGE', data)
-            // setMessages(prevState => prevState.concat(data));
+            setMessages(prevState => prevState.concat(data.senderChatID + ': ' + data.content));
         });
 
         // CLEAN UP THE EFFECT
@@ -42,6 +49,7 @@ export default function Chat() {
             receiverChatID: receiver,
             senderChatID: sender
         })
+        setMessages(prevState => prevState.concat(sender + ': ' + message));
         setMessage('')
     }
 
