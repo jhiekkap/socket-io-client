@@ -15,6 +15,8 @@ const EMOIJIS = {
     sad: '☹️'
 }
 
+const users = ['Jari', 'Sampsa', 'Kasperi', 'Janina']
+
 
 
 export default function Chat() {
@@ -107,28 +109,24 @@ export default function Chat() {
         <div style={{ padding: '5%' }}>
             <Grid container spacing={3}>
                 <Grid item md={6}>
-                    <Stream />
+                    <Stream sender={sender} />
                     <form onSubmit={handleSendMessage}>
                         <div >
                             <div>
                                 LÄHETTÄJÄ
                             </div>
-                            <input
-                                type='text'
-                                value={sender}
-                                onChange={(e) => setSender(e.target.value)}
-                            />
+                            <select onChange={(e) => setSender(e.target.value)}>
+                                {users.map((user, i) => <option key={i}>{user}</option>)}
+                            </select>
                         </div>
                         <br />
                         <div>
                             <div>
                                 VASTAANOTTAJA
                             </div>
-                            <input
-                                type='text'
-                                value={receiver}
-                                onChange={(e) => setReceiver(e.target.value)}
-                            />
+                            <select onChange={(e) => setReceiver(e.target.value)}>
+                                {users.map((user, i) => <option key={i}>{user}</option>)}
+                            </select>
                         </div>
                         <br />
                         <div>
@@ -179,7 +177,7 @@ export default function Chat() {
                     </div>}
                 </Grid>
                 <Grid item md={6}>
-
+                    <View receiver={receiver}/>
                 </Grid>
             </Grid>
         </div>

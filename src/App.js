@@ -3,8 +3,7 @@ import ClientComponent from "./ClientComponent";
 import Chat from './Chat'
 
 function App() {
-  const [loadClient, setLoadClient] = useState(true);
-  
+  const [loadClient, setLoadClient] = useState(true); 
 
   return (
     <>
