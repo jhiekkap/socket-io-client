@@ -1,8 +1,9 @@
 import React, { useRef, useEffect } from 'react'
 import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:4001";
+const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://fierce-beach-86051.herokuapp.com/' : "http://127.0.0.1:4001";
 
-const Stream = ({ currentUser }) => {
+
+const Stream = ({ currentUser, receiver }) => {
 
     const canvasRef = useRef();
     const videoRef = useRef()
@@ -38,15 +39,15 @@ const Stream = ({ currentUser }) => {
             logger("Camera connected");
         }
 
-        function loadFail() {
-
+        function loadFail() { 
             logger("Camera not connected");
         }
 
         function Draw(video, context) {
             context.drawImage(video, 0, 0, context.width, context.height);
             socket.emit('send_message', {
-                receiverChatID: 'Kalle',
+                senderChatID: currentUser,
+                receiverChatID: receiver,
                 videoStream: canvasRef.current.toDataURL('image/webp')
             });
         }
@@ -63,7 +64,9 @@ const Stream = ({ currentUser }) => {
         setInterval(function () {
             Draw(videoRef.current, context);
         }, 0.1);
-    }, [currentUser])
+
+        return () => socket.disconnect();
+    }, [currentUser,receiver])
 
     return <div>
         <video ref={videoRef} src="" width='180' height='150' autoPlay={true}></video>

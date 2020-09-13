@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import socketIOClient from "socket.io-client";
 import { Grid } from '@material-ui/core';
 import Stream from './Stream'
 import View from './View'
 
-const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://young-dawn-64939.herokuapp.com/' : "http://127.0.0.1:4001";
+const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://fierce-beach-86051.herokuapp.com/' : "http://127.0.0.1:4001";
 const emoijiStyles = {
     cursor: 'pointer',
     marginRight: '2%'
@@ -23,13 +23,17 @@ export default function Chat() {
     const [content, setContent] = useState('')
     const [messages, setMessages] = useState([])
     const [currentUser, setCurrentUser] = useState(users[0])
-    const [receiver, setReceiver] = useState('')
+    const [receiver, setReceiver] = useState(users[1])
     const [recipients, setRecipients] = useState('')
     const [file, setFile] = useState(null)
     const [purity, setPurity] = useState(50)
     const [overtones, setOvertones] = useState(50)
     const [sendingEmoiji, setSendingEmoiji] = useState(false)
     const [showEmoiji, setShowEmoiji] = useState('')
+    const [videoStream, setVideoStream] = useState('')
+    const [videoSender, setVideoSender] = useState('')
+
+    const imgRef = useRef()
 
     const emoijiStyles = {
         cursor: 'pointer',
@@ -60,9 +64,9 @@ export default function Chat() {
         });
 
         socket.on("receive_message", (data) => {
-            console.log('NEW MESSAGE', data)
+            //console.log('NEW MESSAGE', data)
             if (data.content) {
-                setMessages(prevState => prevState.concat(data.senderChatID + ': ' + data.content));
+                setMessages(prevState => prevState.concat(data.senderChatID + '=> ' + data.receiverChatID + ': ' + data.content));
             } else if (data.emoiji) {
                 setSendingEmoiji(true)
                 setShowEmoiji(data.emoiji)
@@ -70,6 +74,12 @@ export default function Chat() {
                     setSendingEmoiji(false)
                     setShowEmoiji('')
                 }, 2000)
+            } else if (data.videoStream) {
+                //setVideoStream(data.videoStream)
+                imgRef.current.src = data.videoStream
+                if (videoSender !== data.senderChatID) {
+                    setVideoSender(data.senderChatID)
+                }
             }
         });
 
@@ -89,9 +99,7 @@ export default function Chat() {
             content,
             recipients,
         })
-        if (recipients !== 'ALL') {
-            setMessages(prevState => prevState.concat(currentUser + ': ' + content));
-        }
+        setMessages(prevState => prevState.concat(currentUser + '=> ' + receiver + ': ' + content));
         setContent('')
     }
 
@@ -109,13 +117,13 @@ export default function Chat() {
         <div style={{ padding: '5%' }}>
             <Grid container spacing={3}>
                 <Grid item md={6}>
-                    <Stream currentUser={currentUser} />
+                    <Stream currentUser={currentUser} receiver={receiver} />
                     <form onSubmit={handleSendMessage}>
                         <div >
                             <div>
                                 LÄHETTÄJÄ
                             </div>
-                            <select onChange={(e) => setCurrentUser(e.target.value)}>
+                            <select value={currentUser} onChange={(e) => setCurrentUser(e.target.value)}>
                                 {users.map((user, i) => <option key={i}>{user}</option>)}
                             </select>
                         </div>
@@ -124,7 +132,7 @@ export default function Chat() {
                             <div>
                                 VASTAANOTTAJA
                             </div>
-                            <select onChange={(e) => setReceiver(e.target.value)}>
+                            <select value={receiver} onChange={(e) => setReceiver(e.target.value)}>
                                 {users.map((user, i) => <option key={i}>{user}</option>)}
                             </select>
                         </div>
@@ -177,7 +185,7 @@ export default function Chat() {
                     </div>}
                 </Grid>
                 <Grid item md={6}>
-                    <View receiver={receiver} />
+                    <View imgRef={imgRef} videoSender={videoSender} />
                 </Grid>
             </Grid>
         </div>
