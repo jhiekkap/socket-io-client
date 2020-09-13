@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import socketIOClient from "socket.io-client";
+import { Grid } from '@material-ui/core';
 
 const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://young-dawn-64939.herokuapp.com/' : "http://127.0.0.1:4001";
 const emoijiStyles = {
@@ -102,75 +103,82 @@ export default function Chat() {
 
     return (
         <div style={{ padding: '5%' }}>
-            <form onSubmit={handleSendMessage}>
-                <div >
-                    <div>
-                        LÄHETTÄJÄ
-                    </div>
-                    <input
-                        type='text'
-                        value={sender}
-                        onChange={(e) => setSender(e.target.value)}
-                    />
-                </div>
-                <br />
-                <div>
-                    <div>
-                        VASTAANOTTAJA
-                    </div>
-                    <input
-                        type='text'
-                        value={receiver}
-                        onChange={(e) => setReceiver(e.target.value)}
-                    />
-                </div>
-                <br />
-                <div>
-                    <div>
-                        VIESTI
-                    </div>
-                    <input
-                        type='text'
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                    />
-                    <div>
+            <Grid container spacing={3}>
+                <Grid item md={6}>
+                    <form onSubmit={handleSendMessage}>
+                        <div >
+                            <div>
+                                LÄHETTÄJÄ
+                            </div>
+                            <input
+                                type='text'
+                                value={sender}
+                                onChange={(e) => setSender(e.target.value)}
+                            />
+                        </div>
                         <br />
-                        <button type='submit' disabled={!sender}>PUSH ME</button>
-                    </div>
+                        <div>
+                            <div>
+                                VASTAANOTTAJA
+                            </div>
+                            <input
+                                type='text'
+                                value={receiver}
+                                onChange={(e) => setReceiver(e.target.value)}
+                            />
+                        </div>
+                        <br />
+                        <div>
+                            <div>
+                                VIESTI
+                            </div>
+                            <input
+                                type='text'
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                            />
+                            <div>
+                                <br />
+                                <button type='submit' disabled={!sender}>PUSH ME</button>
+                            </div>
+                            <br />
+                            <div>
+                                <input
+                                    type='checkbox'
+                                    checked={recipients !== 'ALL'}
+                                    onChange={() => setRecipients(recipients !== 'ALL' ? 'ALL' : '')}
+                                    name='recipients'
+                                />
+                                <label>YKSITYINEN</label>
+                                <input
+                                    type='checkbox'
+                                    checked={recipients === 'ALL'}
+                                    onChange={() => setRecipients(recipients === 'ALL' ? '' : 'ALL')}
+                                    name='recipients'
+                                />
+                                <label>KAIKKI</label>
+                            </div>
+                        </div>
+                    </form>
                     <br />
                     <div>
-                        <input
-                            type='checkbox'
-                            checked={recipients !== 'ALL'}
-                            onChange={() => setRecipients(recipients !== 'ALL' ? 'ALL' : '')}
-                            name='recipients'
-                        />
-                        <label>YKSITYINEN</label>
-                        <input
-                            type='checkbox'
-                            checked={recipients === 'ALL'}
-                            onChange={() => setRecipients(recipients === 'ALL' ? '' : 'ALL')}
-                            name='recipients'
-                        />
-                        <label>KAIKKI</label>
+                        <span onClick={() => handleSendEmoiji('heart')} style={emoijiStyles}> ❤️️ </span>
+                        <span onClick={() => handleSendEmoiji('happy')} style={emoijiStyles}> 😊 </span>
+                        <span onClick={() => handleSendEmoiji('sad')} style={emoijiStyles}> ☹️ </span>
                     </div>
-                </div>
-            </form>
-            <br />
-            <div>
-                <span onClick={() => handleSendEmoiji('heart')} style={emoijiStyles}> ❤️️ </span>
-                <span onClick={() => handleSendEmoiji('happy')} style={emoijiStyles}> 😊 </span>
-                <span onClick={() => handleSendEmoiji('sad')} style={emoijiStyles}> ☹️ </span>
-            </div>
-            <div>
-                <ul>
-                    {messages.map((msg, i) => <li key={i}>{msg}</li>)}
-                </ul>
-            </div>
-            {showEmoiji && <div style={{ position: 'fixed', top: '50px', right: '50px', fontSize: '300px' }}>
-                {EMOIJIS[showEmoiji]}
-            </div>}
+                    <div>
+                        <ul>
+                            {messages.map((msg, i) => <li key={i}>{msg}</li>)}
+                        </ul>
+                    </div>
+                    {showEmoiji && <div style={{ position: 'fixed', top: '50px', right: '50px', fontSize: '300px' }}>
+                        {EMOIJIS[showEmoiji]}
+                    </div>}
+                </Grid>
+                <Grid item md={6}>
+
+                </Grid>
+            </Grid>
         </div>
 
     );
