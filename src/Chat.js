@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import socketIOClient from "socket.io-client";
 import { Grid } from '@material-ui/core';
+import Stream from './Stream'
+import View from './View'
 
 const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://young-dawn-64939.herokuapp.com/' : "http://127.0.0.1:4001";
 const emoijiStyles = {
@@ -105,6 +107,7 @@ export default function Chat() {
         <div style={{ padding: '5%' }}>
             <Grid container spacing={3}>
                 <Grid item md={6}>
+                    <Stream />
                     <form onSubmit={handleSendMessage}>
                         <div >
                             <div>
