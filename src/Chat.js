@@ -22,7 +22,7 @@ const users = ['Jari', 'Sampsa', 'Kasperi', 'Janina']
 export default function Chat() {
     const [content, setContent] = useState('')
     const [messages, setMessages] = useState([])
-    const [sender, setSender] = useState('')
+    const [currentUser, setCurrentUser] = useState(users[0])
     const [receiver, setReceiver] = useState('')
     const [recipients, setRecipients] = useState('')
     const [file, setFile] = useState(null)
@@ -39,7 +39,7 @@ export default function Chat() {
 
 
     //console.log('MESSAGES', messages)
-    //console.log('SENDER: ', sender)
+    console.log('CURRENT USER: ', currentUser)
     // console.log('RECEIVER: ', receiver)
     console.log('RECIPIENTS: ', recipients)
 
@@ -51,11 +51,11 @@ export default function Chat() {
         const chatID = random === 0 ? 'a' : 'b'
         console.log('chatId', chatID)
         setReceiver(random === 1 ? 'a' : 'b')
-        setSender(chatID)
+        setCurrentUser(chatID)
  */
         const socket = socketIOClient(ENDPOINT, {
             query: {
-                chatID: sender
+                chatID: currentUser
             }
         });
 
@@ -77,7 +77,7 @@ export default function Chat() {
         return () => socket.disconnect();
         //
 
-    }, [sender, receiver]);
+    }, [currentUser, receiver]);
 
 
     const handleSendMessage = (e) => {
@@ -85,12 +85,12 @@ export default function Chat() {
         const socket = socketIOClient(ENDPOINT);
         socket.emit('send_message', {
             receiverChatID: receiver,
-            senderChatID: sender,
+            senderChatID: currentUser,
             content,
             recipients,
         })
         if (recipients !== 'ALL') {
-            setMessages(prevState => prevState.concat(sender + ': ' + content));
+            setMessages(prevState => prevState.concat(currentUser + ': ' + content));
         }
         setContent('')
     }
@@ -99,7 +99,7 @@ export default function Chat() {
         const socket = socketIOClient(ENDPOINT);
         socket.emit('send_message', {
             receiverChatID: receiver,
-            senderChatID: sender,
+            senderChatID: currentUser,
             recipients,
             emoiji
         })
@@ -109,13 +109,13 @@ export default function Chat() {
         <div style={{ padding: '5%' }}>
             <Grid container spacing={3}>
                 <Grid item md={6}>
-                    <Stream sender={sender} />
+                    <Stream currentUser={currentUser} />
                     <form onSubmit={handleSendMessage}>
                         <div >
                             <div>
                                 LÄHETTÄJÄ
                             </div>
-                            <select onChange={(e) => setSender(e.target.value)}>
+                            <select onChange={(e) => setCurrentUser(e.target.value)}>
                                 {users.map((user, i) => <option key={i}>{user}</option>)}
                             </select>
                         </div>
@@ -140,7 +140,7 @@ export default function Chat() {
                             />
                             <div>
                                 <br />
-                                <button type='submit' disabled={!sender}>PUSH ME</button>
+                                <button type='submit' disabled={!currentUser}>PUSH ME</button>
                             </div>
                             <br />
                             <div>
@@ -177,7 +177,7 @@ export default function Chat() {
                     </div>}
                 </Grid>
                 <Grid item md={6}>
-                    <View receiver={receiver}/>
+                    <View receiver={receiver} />
                 </Grid>
             </Grid>
         </div>

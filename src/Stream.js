@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react'
 import socketIOClient from "socket.io-client";
 const ENDPOINT = "http://127.0.0.1:4001";
 
-const Stream = ({ sender }) => {
+const Stream = ({ currentUser }) => {
 
     const canvasRef = useRef();
     const videoRef = useRef()
@@ -18,7 +18,7 @@ const Stream = ({ sender }) => {
 
         const socket = socketIOClient(ENDPOINT, {
             query: {
-                chatID: sender
+                chatID: currentUser
             }
         });
 
@@ -63,7 +63,7 @@ const Stream = ({ sender }) => {
         setInterval(function () {
             Draw(videoRef.current, context);
         }, 0.1);
-    }, [sender])
+    }, [currentUser])
 
     return <div>
         <video ref={videoRef} src="" width='180' height='150' autoPlay={true}></video>
