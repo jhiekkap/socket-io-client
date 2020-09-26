@@ -5,11 +5,11 @@ import Stream from './Stream'
 import View from './View'
 
 const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://fierce-beach-86051.herokuapp.com/' : "http://127.0.0.1:4001";
-const emoijiStyles = {
+const EMOJIStyles = {
     cursor: 'pointer',
     marginRight: '2%'
 }
-const EMOIJIS = {
+const EMOJIS = {
     heart: '❤️️',
     happy: '😊',
     sad: '☹️'
@@ -28,17 +28,17 @@ export default function Chat() {
     const [file, setFile] = useState(null)
     const [purity, setPurity] = useState(50)
     const [overtones, setOvertones] = useState(50)
-    const [sendingEmoiji, setSendingEmoiji] = useState(false)
-    const [showEmoiji, setShowEmoiji] = useState('')
+    const [sendingEmoji, setSendingEmoji] = useState(false)
+    const [showEmoji, setShowEmoji] = useState('')
     const [videoStream, setVideoStream] = useState('')
     const [videoSender, setVideoSender] = useState('')
 
     const imgRef = useRef()
 
-    const emoijiStyles = {
+    const EMOJIStyles = {
         cursor: 'pointer',
         marginRight: '2%',
-        fontSize: sendingEmoiji && '20px'
+        fontSize: sendingEmoji && '20px'
     }
 
 
@@ -67,12 +67,12 @@ export default function Chat() {
             //console.log('NEW MESSAGE', data)
             if (data.content) {
                 setMessages(prevState => prevState.concat(data.senderChatID + '=> ' + data.receiverChatID + ': ' + data.content));
-            } else if (data.emoiji) {
-                setSendingEmoiji(true)
-                setShowEmoiji(data.emoiji)
+            } else if (data.emoji) {
+                setSendingEmoji(true)
+                setShowEmoji(data.emoji)
                 setTimeout(() => {
-                    setSendingEmoiji(false)
-                    setShowEmoiji('')
+                    setSendingEmoji(false)
+                    setShowEmoji('')
                 }, 2000)
             } else if (data.videoStream) {
                 //setVideoStream(data.videoStream)
@@ -103,13 +103,13 @@ export default function Chat() {
         setContent('')
     }
 
-    const handleSendEmoiji = (emoiji) => {
+    const handleSendEmoji = (emoji) => {
         const socket = socketIOClient(ENDPOINT);
         socket.emit('send_message', {
             receiverChatID: receiver,
             senderChatID: currentUser,
             recipients,
-            emoiji
+            emoji
         })
     }
 
@@ -171,17 +171,17 @@ export default function Chat() {
                     </form>
                     <br />
                     <div>
-                        <span onClick={() => handleSendEmoiji('heart')} style={emoijiStyles}> ❤️️ </span>
-                        <span onClick={() => handleSendEmoiji('happy')} style={emoijiStyles}> 😊 </span>
-                        <span onClick={() => handleSendEmoiji('sad')} style={emoijiStyles}> ☹️ </span>
+                        <span onClick={() => handleSendEmoji('heart')} style={EMOJIStyles}> ❤️️ </span>
+                        <span onClick={() => handleSendEmoji('happy')} style={EMOJIStyles}> 😊 </span>
+                        <span onClick={() => handleSendEmoji('sad')} style={EMOJIStyles}> ☹️ </span>
                     </div>
                     <div>
                         <ul>
                             {messages.map((msg, i) => <li key={i}>{msg}</li>)}
                         </ul>
                     </div>
-                    {showEmoiji && <div style={{ position: 'fixed', top: '50px', right: '50px', fontSize: '300px' }}>
-                        {EMOIJIS[showEmoiji]}
+                    {showEmoji && <div style={{ position: 'fixed', top: '50px', right: '50px', fontSize: '300px' }}>
+                        {EMOJIS[showEmoji]}
                     </div>}
                 </Grid>
                 <Grid item md={6} style={{ display: videoSender ? 'block' : 'none' }}>
