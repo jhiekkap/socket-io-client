@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import socketIOClient from "socket.io-client";
 const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://fierce-beach-86051.herokuapp.com/' : "http://127.0.0.1:4001";
 
@@ -7,6 +7,21 @@ const Stream = ({ currentUser, receiver }) => {
 
     const canvasRef = useRef();
     const videoRef = useRef()
+    const [loggings, setLoggings] = useState([])
+    const [showStream, setShowStream] = useState(false)
+
+
+    const handleStream = () => {
+        setShowStream(true)
+    }
+
+    function hasGetUserMedia() {
+        return !!(navigator.mediaDevices &&
+            navigator.mediaDevices.getUserMedia); 
+    }
+
+     
+
 
     useEffect(() => {
         canvasRef.current.width = 180
@@ -25,7 +40,16 @@ const Stream = ({ currentUser, receiver }) => {
 
         function logger(msg) {
             console.log(msg);
+            setLoggings(loggings => loggings.concat(msg))
         }
+
+
+        if (hasGetUserMedia()) {
+            logger('getUserMedia() is ok')
+        } else {
+            logger('getUserMedia() is not supported by your browser');
+        }
+
 
         function loadCamera(videoStream) {
             try {
@@ -35,11 +59,10 @@ const Stream = ({ currentUser, receiver }) => {
             catch (error) {
                 videoRef.current.src = URL.createObjectURL(videoStream);
             }
-
             logger("Camera connected");
         }
 
-        function loadFail() { 
+        function loadFail() {
             logger("Camera not connected");
         }
 
@@ -52,25 +75,49 @@ const Stream = ({ currentUser, receiver }) => {
             });
         }
 
-        navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msgGetUserMedia);
-
-        if (navigator.getUserMedia) {
-            navigator.getUserMedia({
-                video: true,
-                audio: false
-            }, loadCamera, loadFail);
+        /*  navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msgGetUserMedia);
+     
+         if (navigator.getUserMedia) {
+             navigator.getUserMedia({
+                 video: true,
+                 audio: false
+             }, loadCamera, loadFail);
+         }
+    */
+        /* navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+        })
+            .then(stream => loadCamera(stream))
+            .catch(error => {
+                loadFail()
+            }) */
+        const initCamera = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: false
+                })
+                loadCamera(stream)
+            } catch (error) {
+                loadFail()
+                logger(error)
+            }
         }
-
-        setInterval(function () {
-            Draw(videoRef.current, context);
-        }, 0.1);
+        initCamera()
+        setInterval(() => Draw(videoRef.current, context), 0.1);
 
         return () => socket.disconnect();
-    }, [currentUser,receiver])
+    }, [currentUser, receiver])
+
 
     return <div>
-        <video ref={videoRef} src="" width='180' height='150' autoPlay={true}></video>
+        {!showStream && <button onClick={handleStream}>STREAM</button>}
+        <div style={{ display: showStream ? 'block' : 'none' }}>
+            <video ref={videoRef} src="" width='180' height='150' autoPlay></video>
+        </div>
         <canvas ref={canvasRef} style={{ display: "none" }} ></canvas>
+        <ul>{loggings.map((logging, i) => <li key={i}>{logging}</li>)}</ul>
     </div>
 }
 

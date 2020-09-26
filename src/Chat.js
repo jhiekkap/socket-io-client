@@ -184,7 +184,7 @@ export default function Chat() {
                         {EMOIJIS[showEmoiji]}
                     </div>}
                 </Grid>
-                <Grid item md={6}>
+                <Grid item md={6} style={{ display: videoSender ? 'block' : 'none' }}>
                     <View imgRef={imgRef} videoSender={videoSender} />
                 </Grid>
             </Grid>

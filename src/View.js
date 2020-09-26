@@ -5,7 +5,7 @@ const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://fierce-beach-8
 
 const View = ({ imgRef, videoSender }) => {
 
-   // const imgRef = useRef()
+    // const imgRef = useRef()
     /* const [receiver, setReceiver] = useState(null)
     const [sender, setSender] = useState(null) */
 
@@ -26,7 +26,7 @@ const View = ({ imgRef, videoSender }) => {
       }, [ receiver, sender]) */
 
     return <div>
-        <img ref={imgRef} /* src={videoStream} */ width="150" height="120" alt="view" />
+        <img ref={imgRef} width="150" height="120" alt="view" />
         {videoSender}
     </div>
 }
