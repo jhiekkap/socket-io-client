@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import socketIOClient from "socket.io-client";
-const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://fierce-beach-86051.herokuapp.com/' : "http://127.0.0.1:4001";
+const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://infinite-mesa-94209.herokuapp.com/' : "http://127.0.0.1:4001";
 
 
 const Stream = ({ currentUser, receiver }) => {
@@ -10,25 +10,19 @@ const Stream = ({ currentUser, receiver }) => {
     const [loggings, setLoggings] = useState([])
     const [showStream, setShowStream] = useState(false)
 
-
     const handleStream = () => {
         setShowStream(true)
     }
 
     function hasGetUserMedia() {
         return !!(navigator.mediaDevices &&
-            navigator.mediaDevices.getUserMedia); 
+            navigator.mediaDevices.getUserMedia);
     }
-
-     
-
 
     useEffect(() => {
         canvasRef.current.width = 180
         canvasRef.current.height = 150;
         const context = canvasRef.current.getContext('2d');
-        console.log('CANVASREF', canvasRef)
-        console.log('CONTEX', context)
         context.width = canvasRef.current.width;
         context.height = canvasRef.current.height;
 
@@ -43,20 +37,16 @@ const Stream = ({ currentUser, receiver }) => {
             setLoggings(loggings => loggings.concat(msg))
         }
 
-
         if (hasGetUserMedia()) {
-            logger('getUserMedia() is ok')
+            logger('getUserMedia is ok')
         } else {
-            logger('getUserMedia() is not supported by your browser');
+            logger('getUserMedia is not supported by your browser');
         }
-
 
         function loadCamera(videoStream) {
             try {
                 videoRef.current.srcObject = videoStream;
-            }
-
-            catch (error) {
+            } catch (error) {
                 videoRef.current.src = URL.createObjectURL(videoStream);
             }
             logger("Camera connected");
@@ -75,23 +65,6 @@ const Stream = ({ currentUser, receiver }) => {
             });
         }
 
-        /*  navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msgGetUserMedia);
-     
-         if (navigator.getUserMedia) {
-             navigator.getUserMedia({
-                 video: true,
-                 audio: false
-             }, loadCamera, loadFail);
-         }
-    */
-        /* navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: false
-        })
-            .then(stream => loadCamera(stream))
-            .catch(error => {
-                loadFail()
-            }) */
         const initCamera = async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({

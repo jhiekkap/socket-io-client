@@ -4,7 +4,7 @@ import { Grid } from '@material-ui/core';
 import Stream from './Stream'
 import View from './View'
 
-const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://fierce-beach-86051.herokuapp.com/' : "http://127.0.0.1:4001";
+const ENDPOINT = process.env.NODE_ENV === 'production' ? 'https://infinite-mesa-94209.herokuapp.com/' : "http://127.0.0.1:4001";
 const EMOJIStyles = {
     cursor: 'pointer',
     marginRight: '2%'
@@ -13,24 +13,17 @@ const EMOJIS = {
     heart: '❤️️',
     happy: '😊',
     sad: '☹️'
-}
-
+} 
 const users = ['Jari', 'Sampsa', 'Kasperi', 'Janina']
-
-
-
+ 
 export default function Chat() {
     const [content, setContent] = useState('')
     const [messages, setMessages] = useState([])
     const [currentUser, setCurrentUser] = useState(users[0])
     const [receiver, setReceiver] = useState(users[1])
-    const [recipients, setRecipients] = useState('')
-    const [file, setFile] = useState(null)
-    const [purity, setPurity] = useState(50)
-    const [overtones, setOvertones] = useState(50)
+    const [recipients, setRecipients] = useState('') 
     const [sendingEmoji, setSendingEmoji] = useState(false)
-    const [showEmoji, setShowEmoji] = useState('')
-    const [videoStream, setVideoStream] = useState('')
+    const [showEmoji, setShowEmoji] = useState('') 
     const [videoSender, setVideoSender] = useState('')
 
     const imgRef = useRef()
@@ -39,32 +32,16 @@ export default function Chat() {
         cursor: 'pointer',
         marginRight: '2%',
         fontSize: sendingEmoji && '20px'
-    }
+    }   
 
-
-    //console.log('MESSAGES', messages)
-    console.log('CURRENT USER: ', currentUser)
-    // console.log('RECEIVER: ', receiver)
-    console.log('RECIPIENTS: ', recipients)
-
-    useEffect(() => {
-
-        console.log('USE EFFECT')
-        /* const random = parseInt(Math.random() * 2)
-        console.log('Random', random)
-        const chatID = random === 0 ? 'a' : 'b'
-        console.log('chatId', chatID)
-        setReceiver(random === 1 ? 'a' : 'b')
-        setCurrentUser(chatID)
- */
+    useEffect(() => {   
         const socket = socketIOClient(ENDPOINT, {
             query: {
                 chatID: currentUser
             }
         });
 
-        socket.on("receive_message", (data) => {
-            //console.log('NEW MESSAGE', data)
+        socket.on("receive_message", (data) => { 
             if (data.content) {
                 setMessages(prevState => prevState.concat(data.senderChatID + '=> ' + data.receiverChatID + ': ' + data.content));
             } else if (data.emoji) {
@@ -74,19 +51,15 @@ export default function Chat() {
                     setSendingEmoji(false)
                     setShowEmoji('')
                 }, 2000)
-            } else if (data.videoStream) {
-                //setVideoStream(data.videoStream)
+            } else if (data.videoStream) { 
                 imgRef.current.src = data.videoStream
                 if (videoSender !== data.senderChatID) {
                     setVideoSender(data.senderChatID)
                 }
             }
-        });
+        });  
 
-        // CLEAN UP THE EFFECT
-        return () => socket.disconnect();
-        //
-
+        return () => socket.disconnect(); 
     }, [currentUser, receiver]);
 
 
@@ -121,7 +94,7 @@ export default function Chat() {
                     <form onSubmit={handleSendMessage}>
                         <div >
                             <div>
-                                LÄHETTÄJÄ
+                                SENDER
                             </div>
                             <select value={currentUser} onChange={(e) => setCurrentUser(e.target.value)}>
                                 {users.map((user, i) => <option key={i}>{user}</option>)}
@@ -130,7 +103,7 @@ export default function Chat() {
                         <br />
                         <div>
                             <div>
-                                VASTAANOTTAJA
+                                RECEIVER
                             </div>
                             <select value={receiver} onChange={(e) => setReceiver(e.target.value)}>
                                 {users.map((user, i) => <option key={i}>{user}</option>)}
@@ -139,7 +112,7 @@ export default function Chat() {
                         <br />
                         <div>
                             <div>
-                                VIESTI
+                                MESSAGE
                             </div>
                             <input
                                 type='text'
@@ -148,7 +121,7 @@ export default function Chat() {
                             />
                             <div>
                                 <br />
-                                <button type='submit' disabled={!currentUser}>PUSH ME</button>
+                                <button type='submit' disabled={!currentUser}>SEND</button>
                             </div>
                             <br />
                             <div>
@@ -158,22 +131,22 @@ export default function Chat() {
                                     onChange={() => setRecipients(recipients !== 'ALL' ? 'ALL' : '')}
                                     name='recipients'
                                 />
-                                <label>YKSITYINEN</label>
+                                <label>PRIVATE</label>
                                 <input
                                     type='checkbox'
                                     checked={recipients === 'ALL'}
                                     onChange={() => setRecipients(recipients === 'ALL' ? '' : 'ALL')}
                                     name='recipients'
                                 />
-                                <label>KAIKKI</label>
+                                <label>ALL</label>
                             </div>
                         </div>
                     </form>
                     <br />
                     <div>
-                        <span onClick={() => handleSendEmoji('heart')} style={EMOJIStyles}> ❤️️ </span>
-                        <span onClick={() => handleSendEmoji('happy')} style={EMOJIStyles}> 😊 </span>
-                        <span onClick={() => handleSendEmoji('sad')} style={EMOJIStyles}> ☹️ </span>
+                        <span onClick={() => handleSendEmoji('heart')} style={EMOJIStyles}>{EMOJIS['heart']}️</span>
+                        <span onClick={() => handleSendEmoji('happy')} style={EMOJIStyles}>{EMOJIS['happy']}</span>
+                        <span onClick={() => handleSendEmoji('sad')} style={EMOJIStyles}>{EMOJIS['sad']}</span>
                     </div>
                     <div>
                         <ul>
@@ -188,7 +161,6 @@ export default function Chat() {
                     <View imgRef={imgRef} videoSender={videoSender} />
                 </Grid>
             </Grid>
-        </div>
-
+        </div> 
     );
 }

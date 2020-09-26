@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import ClientComponent from "./ClientComponent";
+import React, { useState } from "react"; 
 import Chat from './Chat'
 
 function App() {
@@ -8,7 +7,7 @@ function App() {
   return (
     <>
       <button onClick={() => setLoadClient(prevState => !prevState)}>
-        STOPPA CLIENT
+        STOP CLIENT
       </button>
       {loadClient ? <Chat /> : null}
     </>
